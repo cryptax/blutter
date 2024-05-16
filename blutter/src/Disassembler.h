@@ -4,6 +4,10 @@
 #ifdef TARGET_ARCH_ARM64
 #include "Disassembler_arm64.h"
 #endif
+#ifdef TARGET_ARCH_X64
+#include "Disassembler_x64.h"
+#endif
+
 
 
 // master of disassmbled instructions from capstone
