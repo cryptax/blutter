@@ -92,14 +92,21 @@ def cmake_blutter(blutter_name: str, dartlib_name: str, name_suffix: str, macros
     subprocess.run([NINJA_CMD], cwd=builddir, check=True)
     subprocess.run([CMAKE_CMD, '--install', '.'], cwd=builddir, check=True)
 
-def main(indir: str, outdir: str, rebuild_blutter: bool, create_vs_sln: bool, no_analysis: bool):
-    libapp_file, libflutter_file = find_lib_files(indir)
-
-    # getting dart version
-    from extract_dart_info import extract_dart_info
-    dart_version, snapshot_hash, flags, arch, os_name = extract_dart_info(libapp_file, libflutter_file)
+def main(indir: str, outdir: str, rebuild_blutter: bool, create_vs_sln: bool, no_analysis: bool, version: str, snapshot: str, os_name: str, arch: str):
+    if version is None or snapshot is None or os is None or arch is None:
+        libapp_file, libflutter_file = find_lib_files(indir)
+        # getting dart version
+        from extract_dart_info import extract_dart_info
+        dart_version, snapshot_hash, flags, arch, os_name = extract_dart_info(libapp_file, libflutter_file)
+    else:
+        # default flags
+        flags = ['product', 'no-code_comments', 'no-dwarf_stack_traces_mode', 'no-lazy_dispatchers', 'dedup_instructions', 'no-tsan', 'no-asserts', 'arm64', 'android', 'compressed-pointers', 'null-safety']
+        dart_version = version
+        snapshot_hash = snapshot
+        
     print(f'Dart version: {dart_version}, Snapshot: {snapshot_hash}, Target: {os_name} {arch}')
     print('flags: ' + ' '.join(flags))
+
     vers = dart_version.split('.', 2)
     if int(vers[0]) == 2 and int(vers[1]) < 15:
         print('Dart version <2.15, force "no-analysis" option')
@@ -127,6 +134,7 @@ def main(indir: str, outdir: str, rebuild_blutter: bool, create_vs_sln: bool, no
         else:
             dartlib_file = os.path.join(PKG_LIB_DIR, 'lib'+dartlib_name+'.a')
         if not os.path.isfile(dartlib_file):
+            print(f'blutter_file={blutter_file} not found - building {dartlib_file}')
             fetch_and_build(dart_version, arch, os_name, has_compressed_ptrs, snapshot_hash)
         
         rebuild_blutter = True
@@ -160,9 +168,13 @@ if __name__ == "__main__":
     # TODO: accept apk or ipa
     parser.add_argument('indir', help='A directory directory that contains both libapp.so and libflutter.so')
     parser.add_argument('outdir', help='An output directory')
+    parser.add_argument('--version', help='Dart SDK version e.g 3.2.6', action='store')
+    parser.add_argument('--snapshot', help='Snapshot hash e.g. f71c76320d35b65f1164dbaa6d95fe09,', action='store')
+    parser.add_argument('--os', help='Operating System name e.g. android', action='store')
+    parser.add_argument('--arch', help='Architecture e.g. arm64', action='store')
     parser.add_argument('--rebuild', action='store_true', default=False, help='Force rebuild the Blutter executable')
     parser.add_argument('--vs-sln', action='store_true', default=False, help='Generate Visual Studio solution at <outdir>')
     parser.add_argument('--no-analysis', action='store_true', default=False, help='Do not build with code analysis')
     args = parser.parse_args()
 
-    main(args.indir, args.outdir, args.rebuild, args.vs_sln, args.no_analysis)
+    main(args.indir, args.outdir, args.rebuild, args.vs_sln, args.no_analysis, args.version, args.snapshot, args.os, args.arch)
