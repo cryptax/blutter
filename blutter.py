@@ -199,7 +199,7 @@ if __name__ == "__main__":
         prog='B(l)utter',
         description='Reversing a flutter application tool')
     # TODO: accept ipa
-    parser.add_argument('indir', help='A directory directory that contains both libapp.so and libflutter.so')
+    parser.add_argument('indir', help='A directory directory that contains both libapp.so and libflutter.so, or an APK file.')
     parser.add_argument('outdir', help='An output directory')
     parser.add_argument('--version', help='Dart SDK version e.g 3.2.6', action='store')
     parser.add_argument('--snapshot', help='Snapshot hash e.g. f71c76320d35b65f1164dbaa6d95fe09,', action='store')
