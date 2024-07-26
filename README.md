@@ -37,11 +37,15 @@ pip3 install pyelftools requests
 ```
 
 ## Usage
-Extract "lib" directory from apk file
+```
+python3 blutter.py path/to/apk out_dir
+```
+
+or extract "lib" directory from apk file
 ```
 python3 blutter.py path/to/app/lib/arm64-v8a out_dir
 ```
-The blutter.py will automatically detect the Dart version from the flutter engine and call executable of blutter to get the information from libapp.so.
+The blutter.py will automatically detect the Dart version from the flutter engine and call executable of blutter to get the information from `libapp.so`.
 
 If the blutter executable for required Dart version does not exists, the script will automatically checkout Dart source code and compiling it.
 
@@ -83,4 +87,4 @@ python blutter.py path\to\lib\arm64-v8a build\vs --vs-sln
   - Object modification
 - Obfuscated app (still missing many functions)
 - Reading iOS binary
-- Input as apk or ipa
+- Input as ipa
