@@ -149,7 +149,7 @@ void DartDumper::Dump4Radare2(std::filesystem::path outDir)
 		std::replace(name.begin(), name.end(), '+', '_');
 		of << std::format("f method.{}={:#x}\n", name.c_str(), ep);
 	}
-
+	of << std::format("af @@ method.*\n"); // declaring all functions
 }
 
 void DartDumper::Dump4Ida(std::filesystem::path outDir)
